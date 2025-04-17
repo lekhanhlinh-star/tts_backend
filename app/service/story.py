@@ -7,11 +7,12 @@ import os
 from schemas.story import StoryCreate
 from .voice import VOICE_DIR
 from fastapi import Depends, HTTPException,UploadFile,File
-
+from models.VoicePrint import VoicePrint
 from fastapi.responses import FileResponse,JSONResponse
 
 
 
+VOICE_DIR = "app/voice_files"
 
 
 async def create_story(title:str,  uid:str, content:str,  category:str,picture:UploadFile,db: Session = Depends(get_db)):
@@ -36,30 +37,30 @@ async def create_story(title:str,  uid:str, content:str,  category:str,picture:U
 
 
 async def get_story(uid: str, story_id: str, db: Session ):
-    recording = db.query(Story).filter(
-        Story.uid == uid,
-        Story.story_id == story_id
+    story= db.query(VoicePrint).filter(
+        VoicePrint.story_id == story_id and VoicePrint.uid == uid
     ).first()
-    print(recording.uid)
+    print("Story: ",story)
     
-    if not recording:
+    
+    if not story:
         raise HTTPException(status_code=404, detail="Story not found")
-    if not recording.file_audio:
+    if not story.file_audio:
         raise HTTPException(status_code=405, detail="Audio story not complete")
 
     
-    file_path =  recording.file_audio
+    file_path =  story.file_audio
+    file_path = os.path.join("",file_path)
+    print(file_path)
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found")
     
     return FileResponse(file_path, media_type="audio/wav")
 
 async def get_status_story(uid: str, story_id: str, db: Session ):
-    recording = db.query(Story).filter(
-        Story.uid == uid,
-        Story.story_id == story_id
+    recording = db.query(VoicePrint).filter(
+        VoicePrint.story_id == story_id and VoicePrint.uid == uid
     ).first()
-    print(recording)
 
     if not recording:
         raise HTTPException(status_code=404, detail="Story not found")

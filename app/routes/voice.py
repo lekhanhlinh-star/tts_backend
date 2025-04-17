@@ -9,8 +9,9 @@ voice_router = APIRouter(prefix="/api/v1/voice")
 @voice_router.post("/")
 async def upload_recording(uid:str=Form(...),
                            voice:UploadFile=File(...),
+                           prompt_text:str =Form(...),
                             db: Session = Depends(get_db)):
-    return await create_record_voice(uid,voice,db)
+    return await create_record_voice(uid,voice,prompt_text,db)
 
 
 # @voice_router.get("/story-recordings/{story_id}")

@@ -11,4 +11,4 @@ class User(Base):
     email = Column(String(255), unique=True, nullable=False, index=True)
     password = Column(String(255), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
-    stories = relationship('Story', back_populates='user')
+    voice_prints = relationship("VoicePrint", back_populates="user")
